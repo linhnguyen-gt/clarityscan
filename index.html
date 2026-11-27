@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClarityScan — Plain-Language Contract &amp; Medical Bill Risk Decoder</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to ClarityScan decoder</a>
+
+  <header class="site-header">
+    <div class="shell header-inner">
+      <div>
+        <span class="badge">AI OpenBuild · Client-Side Privacy First</span>
+        <h1>ClarityScan</h1>
+        <p class="subtitle">Decode leases, job offers, medical bills, and terms of service in seconds. Flag hidden traps, hear plain-English summaries, and draft polite counter-emails.</p>
+      </div>
+      <div class="voice-controls">
+        <button id="btn-speak-summary" type="button" class="btn btn-secondary">Read Summary Aloud</button>
+        <button id="btn-stop-speech" type="button" class="btn btn-ghost">Stop Speech</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content" tabindex="-1" class="shell grid-layout">
+    <section class="card" aria-labelledby="input-heading">
+      <h2 id="input-heading">1. Paste or Load a Document</h2>
+      <p class="card-desc">Analysis runs 100% locally in your browser. Nothing is uploaded unless you submit an optional BYOK question.</p>
+
+      <div class="sample-row" role="group" aria-label="Sample documents">
+        <button type="button" class="chip" data-sample-id="apartment-lease">Apartment Lease</button>
+        <button type="button" class="chip" data-sample-id="startup-job-offer">Startup Job Offer</button>
+        <button type="button" class="chip" data-sample-id="hospital-invoice">Hospital Bill</button>
+        <button type="button" class="chip" data-sample-id="saas-terms">SaaS Terms</button>
+      </div>
+
+      <form id="scan-form" class="stack-form">
+        <div class="controls-row">
+          <label for="doc-type-select">Category</label>
+          <select id="doc-type-select"></select>
+          <label for="doc-file-input" class="file-label">Upload .txt/.md
+            <input id="doc-file-input" type="file" accept=".txt,.md,.csv,text/plain">
+          </label>
+        </div>
+        <label for="doc-text-input" class="sr-only">Document text to analyze</label>
+        <textarea id="doc-text-input" rows="8" placeholder="Paste lease terms, employment clauses, medical charges, or service terms..."></textarea>
+        <button type="submit" class="btn btn-primary">Decode Red Flags</button>
+      </form>
+
+      <p id="clarity-status" class="status-line" role="status">Ready. Pick one of the four sample documents or paste text above.</p>
+    </section>
+
+    <section class="card" aria-labelledby="risk-heading">
+      <h2 id="risk-heading">2. Risk Breakdown &amp; Plain-English Findings</h2>
+      <div id="risk-metrics" class="metrics-grid"></div>
+      <div class="chart-wrap">
+        <svg id="risk-chart" viewBox="0 0 410 105" role="img" aria-label="Clause severity distribution chart"></svg>
+      </div>
+      <div id="findings-list" class="findings-list" aria-live="polite">
+        Load one of the 4 sample documents above or paste your own lease, job offer, medical bill, or terms of service.
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="draft-heading">
+      <div class="card-head">
+        <div>
+          <h2 id="draft-heading">3. Polite Counter-Email &amp; Dispute Builder</h2>
+          <p class="card-desc">Generates a ready-to-send negotiation or itemized-bill dispute email citing the top red flags.</p>
+        </div>
+        <button id="btn-copy-draft" type="button" class="btn btn-secondary">Copy Email</button>
+      </div>
+
+      <form id="draft-form" class="inline-grid">
+        <div>
+          <label for="draft-sender-input">Your Name</label>
+          <input id="draft-sender-input" type="text" value="Alex">
+        </div>
+        <div>
+          <label for="draft-recipient-input">Recipient Role</label>
+          <input id="draft-recipient-input" type="text" placeholder="e.g. Leasing Office or Billing Dept">
+        </div>
+        <button type="submit" class="btn btn-primary">Refresh Draft</button>
+      </form>
+
+      <p id="draft-subject" class="draft-subject">No draft generated yet</p>
+      <label for="draft-body" class="sr-only">Generated counter-email body</label>
+      <textarea id="draft-body" rows="8" readonly></textarea>
+      <p id="draft-disclaimer" class="disclaimer">Informational aid only, not legal or medical advice.</p>
+    </section>
+
+    <section class="card" aria-labelledby="byok-heading">
+      <div class="card-head">
+        <div>
+          <h2 id="byok-heading">4. Optional BYOK AI Deep-Dive Q&amp;A</h2>
+          <p class="card-desc">Ask follow-up questions using your own OpenAI-compatible API key (held in memory only, never saved).</p>
+        </div>
+        <button id="btn-voice-question" type="button" class="btn btn-ghost" aria-pressed="false">Dictate Question</button>
+      </div>
+
+      <form id="byok-form" class="stack-form">
+        <div class="inline-grid">
+          <div>
+            <label for="byok-url-input">Provider Base URL</label>
+            <input id="byok-url-input" type="url" value="https://api.openai.com/v1">
+          </div>
+          <div>
+            <label for="byok-model-input">Model</label>
+            <input id="byok-model-input" type="text" value="gpt-4o-mini">
+          </div>
+          <div>
+            <label for="byok-key-input">API Key (optional)</label>
+            <input id="byok-key-input" type="password" placeholder="sk-... or sk-or-...">
+          </div>
+        </div>
+        <label for="byok-question-input">Your follow-up question</label>
+        <input id="byok-question-input" type="text" placeholder="Which clause should I ask to remove first, and why?">
+        <button type="submit" class="btn btn-secondary">Ask AI About Flagged Clauses</button>
+      </form>
+      <div id="byok-answer" class="answer-box" aria-live="polite">
+        Optional: enter an API key only if you want conversational AI follow-up beyond the deterministic scanner.
+      </div>
+    </section>
+  </main>
+
+  <footer class="shell site-footer">
+    <p>ClarityScan is an informational document decoder, not legal or medical advice.</p>
+  </footer>
+</body>
+</html>
